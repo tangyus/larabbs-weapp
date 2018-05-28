@@ -33,12 +33,17 @@ page{
 
 <script>
 	import wepy from 'wepy'
+  import 'wepy-async-function'
+  import api from '@/utils/api'
 
 	export default class extends wepy.app {
 		config = {
 			pages: [
 				'pages/index',
-				'pages/user'
+				'pages/users/me',
+        'pages/users/edit',
+        'pages/auth/login',
+        'pages/auth/register',
 			],
 			window: {
 				backgroundTextStyle: 'light',
@@ -53,7 +58,7 @@ page{
 					iconPath: 'images/index.png',
 					selectedIconPath: 'images/index_selected.png'
 				}, {
-					pagePath: 'pages/user',
+					pagePath: 'pages/users/me',
 					text: '我的',
 					iconPath: 'images/user.png',
 					selectedIconPath: 'images/user_selected.png'
@@ -70,9 +75,42 @@ page{
 		}
 
 		onLaunch() {
-			wepy.login().then(res => {
-        console.log('login: ', res);
-      })
 		}
+
+		async getCurrentUser () {
+			// 如果用户未登录
+      if (!this.checkLogin()) {
+        return null
+      }
+
+      // 从缓存中获取用户信息
+      let user = wepy.getStorageSync('user')
+
+      try {
+				// 登录了但是缓存中没有，请求接口获取
+        if (!user) {
+        	let userResponse = await api.authRequest('user')
+
+          // 状态码为 200 表示请求成功
+          if (userResponse.statusCode === 200) {
+        		user = userResponse.data
+            wepy.setStorageSync('user')
+          }
+        }
+      } catch (err) {
+				console.log(err)
+				wepy.showModal({
+					title: '提示',
+					content: '服务器错误，请联系管理员'
+				})
+      }
+
+      return user
+    }
+
+    // 用户是否已经登录
+    checkLogin () {
+			return (wepy.getStorageSync('access_token') !== '')
+    }
 	}
 </script>

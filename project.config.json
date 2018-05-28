@@ -1,10 +1,10 @@
 {
 	"description": "larabbs weapp project",
 	"setting": {
-		"urlCheck": true,
-		"es6": true,
-		"postcss": true,
-		"minified": true,
+		"urlCheck": false,
+		"es6": false,
+		"postcss": false,
+		"minified": false,
 		"newFeature": true
 	},
 	"compileType": "miniprogram",
