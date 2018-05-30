@@ -157,6 +157,12 @@
 			this.$apply()
     }
 
+    onShow() {
+  		this.$parent.checkRefreshPages(this.getCurrentPages().pop().route, () => {
+  			this.$invoke('topiclist', 'reload')
+      })
+    }
+
     async onLoad() {
 			// 获取分类数据
 			this.getCategories()

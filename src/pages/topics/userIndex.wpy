@@ -24,6 +24,12 @@
 			topiclist: topicList
     }
 
+		onShow() {
+			this.$parent.checkRefreshPages(this.getCurrentPages().pop().route, () => {
+				this.$invoke('topiclist', 'reload')
+			})
+		}
+
     onLoad(options) {
       this.requestUrl = 'users/' + options.user_id + '/topics'
 
