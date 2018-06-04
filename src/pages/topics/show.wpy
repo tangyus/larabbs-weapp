@@ -15,6 +15,13 @@
   .topic-title {
     padding: 15px;
   }
+  .create-reply {
+    width: 40px;
+    height: 40px;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+  }
 </style>
 <template>
   <view class="page">
@@ -33,6 +40,7 @@
           <view class="weui-cell__ft weui-cell__ft_in-access"></view>
         </navigator>
       </view>
+
       <view class="topic-title">
         <view class="page__title">{{ topic.title }}</view>
         <view class="weui-media-box__info topic-info">
@@ -73,6 +81,12 @@
           </navigator>
         </view>
       </view>
+
+
+      <!-- 回复按钮 -->
+      <navigator url="/pages/replies/create?topic_id={{ topic.id }}">
+        <image src="/images/reply.png" class="create-reply" />
+      </navigator>
     </view>
   </view>
 </template>
@@ -157,6 +171,14 @@
       }
     }
 
+		canDelete(user, reply) {
+			if (!user) {
+				return false
+			}
+
+			return (reply.user_id === user.id)
+		}
+
 		// 获取话题数据
     async getTopic(id) {
       try {
@@ -195,6 +217,12 @@
 				})
 			}
     }
+
+		async onShow() {
+			this.$parent.checkRefreshPages(this.getCurrentPages().pop().route, () => {
+				this.getTopic(this.topic.id)
+			})
+		}
 
     async onLoad(options) {
     	await this.getTopic(options.id)
